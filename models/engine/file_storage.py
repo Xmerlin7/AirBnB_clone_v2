@@ -25,6 +25,13 @@ class FileStorage:
                 temp[key] = val.to_dict()
             json.dump(temp, f)
 
+    def delete(self, obj=None):
+        """Deletes an object from storage dictionary"""
+        if obj is None:
+            return
+        key = f"{str(obj.__class__.__name__)}.{str(obj.id)}"
+        del self.__objects[key]
+        self.save()
     def reload(self):
         """Loads storage dictionary from file"""
         from models.base_model import BaseModel
@@ -48,3 +55,7 @@ class FileStorage:
                         self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
+        
+    def close(self):
+        """Resets the use of the data"""
+        self.reload()
