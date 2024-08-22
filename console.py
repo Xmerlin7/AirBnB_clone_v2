@@ -131,6 +131,7 @@ class HBNBCommand(cmd.Cmd):
         new_dict = {}
         while len(commands) != 0:
             commands = commands.partition(" ")
+            # key, _, value = commands.partition("=")
             parameter = commands[0].partition("=")
             key = parameter[0]
             value = parameter[2]
