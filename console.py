@@ -113,46 +113,56 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, arg):
-        """
-        Create a new instance of BaseModel and save it to the JSON file.
-        Usage: create <class_name>
-        """
-        try:
-            class_name = arg.split(" ")[0]
-            if len(class_name) == 0:
-                print("** class name missing **")
-                return
-            if class_name and class_name not in self.valid_classes:
-                print("** class doesn't exist **")
-                return
-
-            kwargs = {}
-            commands = arg.split(" ")
-            for i in range(1, len(commands)):
-                
-                key = commands[i].split("=")[0]
-                value = commands[i].split("=")[1]
-                #key, value = tuple(commands[i].split("="))
-                if value.startswith('"'):
-                    value = value.strip('"').replace("_", " ")
-                else:
-                    try:
-                        value = eval(value)
-                    except (SyntaxError, NameError):
-                        continue
-                kwargs[key] = value
-
-            if kwargs == {}:
-                new_instance = eval(class_name)()
-            else:
-                new_instance = eval(class_name)(**kwargs)
-            storage.new(new_instance)
-            print(new_instance.id)
-            storage.save()
-        except ValueError:
-            print(ValueError)
+    def do_create(self, args):
+        """ Create an object of any class"""
+        if not args:
+            print("** class name missing **")
             return
+
+        commands = args[:]
+        commands = commands.partition(' ')
+        classes = commands[0]
+        if classes not in HBNBCommand.classes:
+            print("** class doesn't exist **")
+            return
+
+        new_instance = HBNBCommand.classes[classes]()
+        commands = commands[2]
+        new_dict = {}
+        while len(commands) != 0:
+            commands = commands.partition(" ")
+            parameter = commands[0].partition("=")
+            key = parameter[0]
+            value = parameter[2]
+            if value.isdecimal():
+                value = int(value)
+            else:
+                try:
+                    value = float(value)
+                except Exception:
+                    if value[0] == '\"' and value[-1] == '\"':
+                        valid = 1
+                        value = value[1:-1]
+                        value = value.replace('_', ' ')
+                        index = value.find('\"', 1)
+                        for i in range(len(value)):
+                            if (i == 0 and value[i] == '"'):
+                                valid = 0
+                            if (value[i] == '"'):
+                                if (value[i - 1] != '\\'):
+                                    valid = 0
+                        if (valid == 0):
+                            commands = commands[2]
+                            continue
+                    else:
+                        commands = commands[2]
+                        continue
+            new_dict[key] = value
+            commands = commands[2]
+
+        new_instance.__dict__.update(new_dict)
+        new_instance.save()
+        print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
