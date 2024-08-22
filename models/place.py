@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
 import models
 import shlex
-
+# from models.amenity import Amenity
 place_amenity = Table("place_amenity", Base.metadata,
                       Column("place_id", String(60),
                              ForeignKey("places.id"),
