@@ -236,6 +236,14 @@ class HBNBCommand(cmd.Cmd):
         print("Destroys an individual instance of a class")
         print("[Usage]: destroy <className> <objectId>\n")
 
+    def  do_delete(self, obj=None):
+        pass
+
+    def help_destroy(self):
+        """ Help information for the destroy command """
+        print("Destroys an individual instance of a class")
+        print("[Usage]: destroy <className> <objectId>\n")
+  
     def do_all(self, args):
         """ Shows all objects, or all objects of a class"""
         print_list = []
